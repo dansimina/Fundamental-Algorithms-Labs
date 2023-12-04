@@ -6,7 +6,7 @@ using namespace std;
 #define maxValue 50000
 #define maxSize 10000
 #define stepSize 100
-#define nrTests 20
+#define nrTests 5
 
 Profiler profiler("lab9");
 
@@ -19,7 +19,7 @@ struct NodeSet {
 };
 
 NodeSet* makeSet(int key, int n){
-    Operation opTotale = profiler.createOperation("Make Set", n);
+    Operation opTotale = profiler.createOperation("Operatii", n);
 
     NodeSet* x = new NodeSet;
     opTotale.count(3);
@@ -31,7 +31,7 @@ NodeSet* makeSet(int key, int n){
 }
 
 NodeSet* findSet(NodeSet *x, int n) {
-    Operation opTotale = profiler.createOperation("Find Set", n);
+    Operation opTotale = profiler.createOperation("Operatii", n);
 
     opTotale.count();
     if(x != x->parent) {
@@ -41,19 +41,8 @@ NodeSet* findSet(NodeSet *x, int n) {
     return x->parent;
 }
 
-NodeSet* findSetUnion(NodeSet *x, int n) {
-    Operation opTotale = profiler.createOperation("Union", n);
-
-    opTotale.count();
-    if(x != x->parent) {
-        opTotale.count();
-        x->parent = findSetUnion(x->parent, n);
-    }
-    return x->parent;
-}
-
 void unify(NodeSet *x, NodeSet *y, int n) {
-    Operation opTotale = profiler.createOperation("Union", n);
+    Operation opTotale = profiler.createOperation("Operatii", n);
 
     opTotale.count();
     if(x->rank > y->rank) {
@@ -73,7 +62,7 @@ void unify(NodeSet *x, NodeSet *y, int n) {
 }
 
 void reunion(NodeSet *x, NodeSet *y, int n) {
-    unify(findSetUnion(x, n), findSetUnion(y, n), n);
+    unify(findSet(x, n), findSet(y, n), n);
 }
 
 //Algoritmul lui Kruskal
@@ -291,11 +280,7 @@ void perf() {
         }
     }
 
-    profiler.divideValues("Make Set", nrTests);
-    profiler.divideValues("Find Set", nrTests);
-    profiler.divideValues("Union", nrTests);
-
-    profiler.createGroup("Operatii" ,"Make Set", "Find Set", "Union");
+    profiler.divideValues("Operatii", nrTests);
 
     profiler.showReport();
 }
