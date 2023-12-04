@@ -1,0 +1,453 @@
+#include <iostream>
+#include <fstream>
+#include "Profiler.h"
+
+using namespace std;
+
+Profiler p("Hash table");
+
+#define N 10007
+#define mElemente 3000
+#define nrTests 5
+
+long long int efortMediuGasite, efortMaximGasite, efortMediuNegasite, efortMaximNegasite;
+long long int nrOperatii, nrElementeGasite, nrElementeNegasite;
+
+struct Entry {
+    int id;
+    char name[30];
+};
+
+struct HashTable {
+    Entry *T[N];
+    int m;
+};
+
+int hp(HashTable T, int k) {
+    return k % T.m;
+}
+
+int h(HashTable T, int k, int i) {
+    return (hp(T, k) + i + i * i) % T.m;
+}
+
+int g(HashTable T, int k, int q) {
+    for (int i = 0; i < T.m; i++) {
+        if (h(T, k, i) == q) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+Entry *create(Entry key) {
+    Entry *p = new Entry;
+    p->id = key.id;
+    strcpy(p->name, key.name);
+
+    return p;
+}
+
+int hashInsert(HashTable &T, Entry k) {
+    int i = 0, q = 0;
+    do {
+        q = h(T, k.id, i);
+
+        if (T.T[q] == NULL) {
+            T.T[q] = create(k);
+            return q;
+        } else i++;
+
+    } while (i != T.m);
+
+    return -1; //overflow
+}
+
+int hashSearch(HashTable T, Entry k) {
+    int i = 0, q = 0;
+    do {
+        nrOperatii++;
+
+        q = h(T, k.id, i);
+
+        if (T.T[q] != NULL and T.T[q]->id == k.id) {
+            return q;
+        }
+        i++;
+    } while (T.T[q] != NULL and i != T.m);
+
+    return -1;
+}
+
+void linearProbingHashDelete(HashTable &T, int q) {
+    if(q == -1){
+        return;
+    }
+
+    int qp = 0;
+    Entry *kp = NULL;
+
+    int aux = T.T[q]->id;
+    delete T.T[q];
+    while (true) {
+        T.T[q] = NULL;
+
+        int qq = q;
+        int i = g(T, aux, q) + 1;
+
+        qp = q;
+//        int i = 1;
+
+        do {
+            qp = (q % T.m + i + i * i) % T.m;
+            i++;
+
+            kp = T.T[qp];
+            if (kp == NULL)
+                return;
+
+        } while (g(T, kp->id, q) >= g(T, kp->id, qp));
+
+        T.T[q] = kp;
+        aux = kp->id;
+        q = qp;
+
+    }
+}
+
+void afisareHashTable(HashTable T) {
+    for (int i = 0; i < T.m; i++) {
+        if (T.T[i] != NULL)
+            cout << T.T[i]->id << " " << T.T[i]->name << " | ";
+        else
+            cout << "NULL" << " | ";
+    }
+    cout << "\n";
+}
+
+void inserareVector(HashTable &T, int vElementeHashTable[], int n) {
+    for (int i = 0; i < n; i++) {
+        Entry k;
+        k.id = vElementeHashTable[i];
+        strcpy(k.name, "HT");
+        hashInsert(T, k);
+//        cout << hashInsert(T, k) << " ";
+    }
+//    cout << "\n";
+}
+
+void demo() {
+    HashTable T = {NULL};
+    T.m = 8;
+
+    int v[] = {1, 3, 9, 17, 2};
+    int n = sizeof(v) / sizeof(v[0]);
+    inserareVector(T, v, n);
+
+    afisareHashTable(T);
+
+    cout << hashSearch(T, Entry(7, "HT")) << "\n";
+
+    linearProbingHashDelete(T, hashSearch(T, Entry(3, "HT")));
+    afisareHashTable(T);
+}
+
+void reset() {
+    efortMediuGasite = 0;
+    efortMaximGasite = 0;
+    efortMediuNegasite = 0;
+    efortMaximNegasite = 0;
+    nrOperatii = 0;
+    nrElementeGasite = 0;
+    nrElementeNegasite = 0;
+}
+
+int fSortare(int a, int b) {
+    return a % N < b % N;
+}
+
+void perf() {
+    ofstream fout("tabel.csv");
+
+    double factorUmplere95 = 0.95;
+    double vFactoriUmplere[] = {0.5, 0.8, 0.85, 0.9, 0.95, 0.99, 1};
+    int nFactoriUmplere = sizeof(vFactoriUmplere) / sizeof(vFactoriUmplere[0]);
+    double factorUmplereInainteStergere = 0.99;
+    double factorUmplereDupaStergere = 0.8;
+
+    int vElementeHashTable[N];
+    int mElementeDeCautat[mElemente];
+
+//    fout << "Factor de umplere, Efort mediu gasite, Efort maxim gasite, Efort mediu negasite, Efort maxim negasite \n";
+
+//    Evaluarea operației de căutare pentru un singur factor de umplere 95%,
+//    folosind o selecție non-uniformă a elementelor.
+
+    fout << "\nEvaluarea operatiei de cautare pentru un singur factor de umplere 95%, \nfolosind o selectie non-uniforma a elementelor. \n";
+    fout << "\nFactor de umplere, Efort mediu gasite, Efort maxim gasite, Efort mediu negasite, Efort maxim negasite \n";
+
+    reset();
+    for (int test = 0; test < nrTests; test++) {
+
+        int n = (double) N * factorUmplere95;
+        HashTable T = {NULL};
+        T.m = N;
+
+        int a[40000] = {0};
+
+        for (int i = 0; i < n;) {
+            int nrDeAdaugat = rand() % 40000;
+
+            while (a[nrDeAdaugat] != 0)
+                nrDeAdaugat = rand() % 40000;
+            a[nrDeAdaugat] = 1;
+
+            int rHashInsert = hashInsert(T, Entry(nrDeAdaugat, ""));
+
+            if (rHashInsert != -1) {
+                vElementeHashTable[i] = nrDeAdaugat;
+                i++;
+            }
+        }
+
+        FillRandomArray(mElementeDeCautat, mElemente, 40000, 50000, FALSE, UNSORTED);
+
+        for (int i = 0; i < mElemente / 2; i++) {
+            mElementeDeCautat[i] = vElementeHashTable[i];
+        }
+
+        for (int i = 0; i < mElemente; i++) {
+            nrOperatii = 0;
+
+            int rHeapSearch = hashSearch(T, Entry(mElementeDeCautat[i], "HT"));
+
+            if (rHeapSearch == -1) {
+                nrElementeNegasite++;
+                efortMediuNegasite += nrOperatii;
+                if (efortMaximNegasite < nrOperatii) {
+                    efortMaximNegasite = nrOperatii;
+                }
+            } else {
+                nrElementeGasite++;
+                efortMediuGasite += nrOperatii;
+                if (efortMaximGasite < nrOperatii) {
+                    efortMaximGasite = nrOperatii;
+                }
+            }
+        }
+
+        //Verificare umplere corecta
+        int cnt = 0;
+        for (int i = 0; i < T.m; i++)
+            if (T.T[i] == NULL) cnt++;
+        if (cnt != N - n) {
+            cout << "Greseala";
+            exit(0);
+        }
+    }
+    if(nrElementeGasite > 0)
+        efortMediuGasite = efortMediuGasite / nrElementeGasite;
+    if(nrElementeNegasite > 0)
+        efortMediuNegasite = efortMediuNegasite / nrElementeNegasite;
+
+    //Verificare gasire corecta
+    if (nrElementeGasite / nrTests != mElemente / 2 || nrElementeNegasite / nrTests != mElemente / 2) {
+        cout << "Greseala";
+        exit(0);
+    }
+    fout << factorUmplere95 << "," << efortMediuGasite << "," << efortMaximGasite << ","
+         << efortMediuNegasite << ","
+         << efortMaximNegasite << "\n";
+
+//    Completarea evaluării pentru toți factorii de umplere folosind selecție
+//    uniformă a elementelor găsite.
+
+    fout << "\nCompletarea evaluarii pentru toti factorii de umplere folosind selectie \n uniforma a elementelor gasite. \n";
+    fout << "\nFactor de umplere, Efort mediu gasite, Efort maxim gasite, Efort mediu negasite, Efort maxim negasite \n";
+
+    for (int iFactor = 0; iFactor < nFactoriUmplere; iFactor++) {
+        reset();
+        for (int test = 0; test < nrTests; test++) {
+
+            int n = (double) N * vFactoriUmplere[iFactor];
+            HashTable T = {NULL};
+            T.m = N;
+
+            int a[40000] = {0};
+
+            for (int i = 0; i < n;) {
+                int nrDeAdaugat = rand() % 40000;
+
+                while (a[nrDeAdaugat] != 0)
+                    nrDeAdaugat = rand() % 40000;
+                a[nrDeAdaugat] = 1;
+
+                int rHashInsert = hashInsert(T, Entry(nrDeAdaugat, ""));
+
+                if (rHashInsert != -1) {
+                    vElementeHashTable[i] = nrDeAdaugat;
+                    i++;
+                }
+            }
+
+            FillRandomArray(mElementeDeCautat, mElemente, 40000, 50000, FALSE, UNSORTED);
+
+            stable_sort(vElementeHashTable, vElementeHashTable + n, fSortare);
+
+            for (int i = 0; i < mElemente; i += 2) {
+                mElementeDeCautat[i] = vElementeHashTable[(n / mElemente) * i];
+            }
+
+            for (int i = 0; i < mElemente; i++) {
+                nrOperatii = 0;
+
+                int rHeapSearch = hashSearch(T, Entry(mElementeDeCautat[i], "HT"));
+
+                if (rHeapSearch == -1) {
+                    nrElementeNegasite++;
+                    efortMediuNegasite += nrOperatii;
+                    if (efortMaximNegasite < nrOperatii) {
+                        efortMaximNegasite = nrOperatii;
+                    }
+                } else {
+                    nrElementeGasite++;
+                    efortMediuGasite += nrOperatii;
+                    if (efortMaximGasite < nrOperatii) {
+                        efortMaximGasite = nrOperatii;
+                    }
+                }
+            }
+
+            //Verificare umplere corecta
+            int cnt = 0;
+            for (int i = 0; i < T.m; i++)
+                if (T.T[i] == NULL) cnt++;
+            if (cnt != N - n) {
+                cout << "Greseala";
+                exit(0);
+            }
+        }
+        if(nrElementeGasite > 0)
+            efortMediuGasite = efortMediuGasite / nrElementeGasite;
+        if(nrElementeNegasite > 0)
+            efortMediuNegasite = efortMediuNegasite / nrElementeNegasite;
+
+        //Verificare gasire corecta
+        if (nrElementeGasite / nrTests != mElemente / 2 || nrElementeNegasite / nrTests != mElemente / 2) {
+            cout << "Greseala";
+            exit(0);
+        }
+
+        fout << vFactoriUmplere[iFactor] << "," << efortMediuGasite << "," << efortMaximGasite << ","
+             << efortMediuNegasite << ","
+             << efortMaximNegasite << "\n";
+    }
+
+//    Evaluare operație căutare după ștergerea unor elemente.
+    fout << "\nEvaluare operatie cautare dupa stergerea unor elemente.\n";
+    fout << "\nFactor de umplere, Efort mediu gasite, Efort maxim gasite, Efort mediu negasite, Efort maxim negasite \n";
+
+    for (int test = 0; test < nrTests; test++) {
+
+            int n = (double) N * factorUmplereInainteStergere;
+            int nf = (double) N * factorUmplereDupaStergere;
+            HashTable T = {NULL};
+            T.m = N;
+
+            int a[40000] = {0};
+
+            for (int i = 0; i < n;) {
+                int nrDeAdaugat = rand() % 40000;
+
+                while (a[nrDeAdaugat] != 0)
+                    nrDeAdaugat = rand() % 40000;
+                a[nrDeAdaugat] = 1;
+
+                int rHashInsert = hashInsert(T, Entry(nrDeAdaugat, ""));
+
+                if (rHashInsert != -1) {
+                    vElementeHashTable[i] = nrDeAdaugat;
+                    i++;
+                }
+            }
+
+            FillRandomArray(mElementeDeCautat, mElemente, 40000, 50000, FALSE, UNSORTED);
+
+            for(int i = n - 1; i >= nf; i--){
+                int elemDeSters = rand() % i;
+
+                int rHashSearch = hashSearch(T, Entry(vElementeHashTable[elemDeSters], ""));
+                if(rHashSearch == -1){
+                    for(int j = 0; j < N; j++){
+                        if(T.T[j] != NULL && T.T[j]->id == vElementeHashTable[elemDeSters]){
+                            cout<<"1     " << j << "    " <<n - i<< "     " ;
+                            break;
+                        }
+                    }
+                    cout << "Greseala0 " << vElementeHashTable[elemDeSters] << " " << hashSearch(T, Entry(vElementeHashTable[elemDeSters], ""));;
+                    exit(0);
+                }
+
+                linearProbingHashDelete(T, rHashSearch);
+                vElementeHashTable[elemDeSters] = -1;
+                swap(vElementeHashTable[elemDeSters], vElementeHashTable[i]);
+            }
+
+            stable_sort(vElementeHashTable, vElementeHashTable + nf, fSortare);
+
+            for (int i = 0; i < mElemente; i += 2) {
+                mElementeDeCautat[i] = vElementeHashTable[(nf / mElemente) * i];
+            }
+
+            for (int i = 0; i < mElemente; i++) {
+                nrOperatii = 0;
+
+                int rHeapSearch = hashSearch(T, Entry(mElementeDeCautat[i], "HT"));
+
+                if (rHeapSearch == -1) {
+                    nrElementeNegasite++;
+                    efortMediuNegasite += nrOperatii;
+                    if (efortMaximNegasite < nrOperatii) {
+                        efortMaximNegasite = nrOperatii;
+                    }
+                } else {
+                    nrElementeGasite++;
+                    efortMediuGasite += nrOperatii;
+                    if (efortMaximGasite < nrOperatii) {
+                        efortMaximGasite = nrOperatii;
+                    }
+                }
+            }
+
+            //Verificare umplere corecta
+            int cnt = 0;
+            for (int i = 0; i < T.m; i++)
+                if (T.T[i] == NULL) cnt++;
+            if (cnt != N - nf) {
+                cout << "Greseala " << cnt << " " << N - nf;
+                exit(0);
+            }
+        }
+        if(nrElementeGasite > 0)
+            efortMediuGasite = efortMediuGasite / nrElementeGasite;
+        if(nrElementeNegasite > 0)
+            efortMediuNegasite = efortMediuNegasite / nrElementeNegasite;
+
+        //Verificare gasire corecta
+        if (nrElementeGasite / nrTests != mElemente / 2 || nrElementeNegasite / nrTests != mElemente / 2) {
+            cout << "Greseala";
+            exit(0);
+        }
+
+        fout << factorUmplereDupaStergere << "," << efortMediuGasite << "," << efortMaximGasite << ","
+             << efortMediuNegasite << ","
+             << efortMaximNegasite << "\n";
+
+}
+
+int main() {
+//    demo();
+    perf();
+    return 0;
+}

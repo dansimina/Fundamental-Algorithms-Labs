@@ -1,0 +1,3 @@
+D:/Documents/Facultate/AF/Laborator/Tema1/cmake-build-release/CMakeFiles/Tema1.dir
+D:/Documents/Facultate/AF/Laborator/Tema1/cmake-build-release/CMakeFiles/edit_cache.dir
+D:/Documents/Facultate/AF/Laborator/Tema1/cmake-build-release/CMakeFiles/rebuild_cache.dir
