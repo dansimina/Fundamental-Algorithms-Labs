@@ -8,7 +8,19 @@ int get_neighbors(const Grid *grid, Point p, Point neighb[])
     // the point p will have at most 4 neighbors (up, down, left, right)
     // avoid the neighbors that are outside the grid limits or fall into a wall
     // note: the size of the array neighb is guaranteed to be at least 4
-    return 0;
+
+    int dRow[] = {0, -1, 0, 1};
+    int dCol[] = {-1, 0, 1, 0};
+    int n = sizeof(dRow)/sizeof(dRow[0]);
+    int cntNeighb = 0;
+
+    for(int i = 0; i < n; i++) {
+        if(p.row + dRow[i] > 0 and p.col + dCol[i] > 0 and p.row + dRow[i] < grid->rows and p.col + dCol[i] < grid->cols and grid->mat[p.row + dRow[i]][p.col + dCol[i]] == 0){
+            neighb[cntNeighb++] = Point(p.row + dRow[i], p.col + dCol[i]);
+        }
+    }
+
+    return cntNeighb;
 }
 
 void grid_to_graph(const Grid *grid, Graph *graph)
