@@ -1,3 +1,25 @@
+/*
+ * Simina Dan
+ * Grupa 2
+ *
+ * Pentru acest laborator am implementat operatiile pe multimi disjuncte si algoritmul lui kruskal.
+ *
+ * Pentru makeset creez o multime noua care sa contina elementul key. Aloc memorie pentru un nod nou ii dau valoarea cheii,
+ * ii pun rank-ul pe 0, iar ca parinte pun nodul insusi.
+ * Complexitate O(1).
+ *
+ * Pentru findset merg pe parinte a nodului pana cand ajung la elementul care reprezinta set-ul.
+ * Complexitate O(n).
+ *
+ * Pentru reunion leg multimea cu mai putine elemente de multimea cu mai multe elemente. In caz ca multimile au acelasi numar de elemente
+ * actualizez rank-ul.
+ * Complexitate O(n).
+ *
+ * Pentru algoritmul lui kruskal mai intai transform fiecare nod intr-o multime si sortez muchiile arborelui in functie de cost.
+ * Apoi selectez pe rand fiecare muchie verific daca cumva inchide un ciclu in arborele de acoperire, iar daca nu o inserez in arborele
+ * de acoperire.
+ * Complexitate O(E^2).
+ */
 #include <iostream>
 #include "Profiler.h"
 
@@ -286,7 +308,7 @@ void perf() {
 }
 
 int main() {
-//    demo();
-    perf();
+    demo();
+//    perf();
     return 0;
 }
