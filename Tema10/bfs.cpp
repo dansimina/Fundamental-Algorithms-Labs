@@ -8,13 +8,18 @@ int get_neighbors(const Grid *grid, Point p, Point neighb[]) {
     // avoid the neighbors that are outside the grid limits or fall into a wall
     // note: the size of the array neighb is guaranteed to be at least 4
 
+    //horse problem
+//    int dRow[] = {1, -1, -2, -2, -1, 1, 2, 2};
+//    int dCol[] = {-2, -2, -1, 1, 2, 2, 1, -1};
+    //normal
     int dRow[] = {-1, 0, 1, 0};
     int dCol[] = {0, -1, 0, 1};
+
     int n = sizeof(dRow) / sizeof(dRow[0]);
     int cntNeighb = 0;
 
     for (int i = 0; i < n; i++) {
-        if (p.row + dRow[i] > 0 and p.col + dCol[i] > 0 and p.row + dRow[i] < grid->rows and
+        if (p.row + dRow[i] >= 0 and p.col + dCol[i] >= 0 and p.row + dRow[i] < grid->rows and
             p.col + dCol[i] < grid->cols and grid->mat[p.row + dRow[i]][p.col + dCol[i]] == 0) {
             neighb[cntNeighb++] = Point(p.row + dRow[i], p.col + dCol[i]);
         }
@@ -27,7 +32,7 @@ void grid_to_graph(const Grid *grid, Graph *graph) {
     //we need to keep the nodes in a matrix, so we can easily refer to a position in the grid
     Node *nodes[MAX_ROWS][MAX_COLS];
     int i, j, k;
-    Point neighb[4];
+    Point neighb[8]; //i made it 8 for the horse problem
 
     //compute how many nodes we have and allocate each node
     graph->nrNodes = 0;
@@ -383,12 +388,12 @@ void generate(Graph &graph, int nrEdges) {
     }
 
     for (int i = 0; i < graph.nrNodes; i++) {
-        if(graph.v[i]->adjSize > 0) {
-            graph.v[i]->adj = new Node*[graph.v[i]->adjSize]{NULL};
+        if (graph.v[i]->adjSize > 0) {
+            graph.v[i]->adj = new Node *[graph.v[i]->adjSize]{NULL};
             graph.v[i]->adjSize = 0;
 
-            for(int j = 0; j < graph.nrNodes; j++) {
-                if(adMatrix[i][j] == 1) {
+            for (int j = 0; j < graph.nrNodes; j++) {
+                if (adMatrix[i][j] == 1) {
                     graph.v[i]->adj[graph.v[i]->adjSize] = graph.v[j];
                     graph.v[i]->adjSize++;
                 }
