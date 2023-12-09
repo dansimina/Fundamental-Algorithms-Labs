@@ -156,27 +156,43 @@ void bfs(Graph *graph, Node *s, Operation *op) {
     // if(op != NULL) op->count();
 
     for (int i = 0; i < graph->nrNodes; i++) {
+
+        if(op != NULL) op->count(3);
+
         graph->v[i]->color = COLOR_WHITE;
         graph->v[i]->dist = INT_MAX;
         graph->v[i]->parent = NULL;
     }
 
+    if(op != NULL) op->count(3);
+
     s->color = COLOR_GRAY;
     s->dist = 0;
     s->parent = NULL;
+
     Queue Q;
     enqueue(Q, s);
 
     while(Q.first != NULL) {
+
+        if(op != NULL) op->count(2);
+
         Node *u = dequeue(Q);
         for(int i = 0; i < u->adjSize; i++) {
+
+            if(op != NULL) op->count();
+
             if(u->adj[i]->color == COLOR_WHITE) {
+
+                if(op != NULL) op->count(3);
+
                 u->adj[i]->color = COLOR_GRAY;
                 u->adj[i]->dist = u->dist + 1;
                 u->adj[i]->parent = u;
                 enqueue(Q, u->adj[i]);
             }
         }
+        if(op != NULL) op->count();
         u->color = COLOR_BLACK;
     }
 
@@ -273,7 +289,18 @@ int shortest_path(Graph *graph, Node *start, Node *end, Node *path[]) {
     // the number of nodes filled in the path array should be returned
     // if end is not reachable from start, return -1
     // note: the size of the array path is guaranteed to be at least 1000
-    return -1;
+
+    bfs(graph, start, NULL);
+    if(end->color == COLOR_WHITE)
+        return -1;
+
+    int n = end->dist;
+    Node *p = end;
+    for(int i = n - 1; i >= 0; i--) {
+        path[i] = p;
+        p = p->parent;
+    }
+    return n;
 }
 
 
