@@ -2,9 +2,6 @@
 #include <string.h>
 #include "bfs.h"
 
-#include <iostream>
-using namespace std;
-
 int get_neighbors(const Grid *grid, Point p, Point neighb[]) {
     // TODO: fill the array neighb with the neighbors of the point p and return the number of neighbors
     // the point p will have at most 4 neighbors (up, down, left, right)
