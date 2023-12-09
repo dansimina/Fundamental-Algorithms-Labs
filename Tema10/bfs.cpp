@@ -115,26 +115,24 @@ LinkedList *create(Node *key) {
 
 void enqueue(Queue &Q, Node *node) {
     LinkedList *p = create(node);
-    if(Q.last == NULL) {
+    if (Q.last == NULL) {
         Q.first = p;
         Q.last = p;
-    }
-    else {
+    } else {
         Q.last->next = p;
         Q.last = Q.last->next;
     }
 }
 
-Node* dequeue(Queue &Q) {
-    if(Q.first == NULL)
+Node *dequeue(Queue &Q) {
+    if (Q.first == NULL)
         return NULL;
 
     LinkedList *node = Q.first;
-    if(Q.first == Q.last) {
+    if (Q.first == Q.last) {
         Q.first = NULL;
         Q.last = NULL;
-    }
-    else {
+    } else {
         Q.first = Q.first->next;
     }
 
@@ -154,14 +152,14 @@ void bfs(Graph *graph, Node *s, Operation *op) {
 
     for (int i = 0; i < graph->nrNodes; i++) {
 
-        if(op != NULL) op->count(3);
+        if (op != NULL) op->count(3);
 
         graph->v[i]->color = COLOR_WHITE;
         graph->v[i]->dist = INT_MAX;
         graph->v[i]->parent = NULL;
     }
 
-    if(op != NULL) op->count(3);
+    if (op != NULL) op->count(3);
 
     s->color = COLOR_GRAY;
     s->dist = 0;
@@ -170,18 +168,18 @@ void bfs(Graph *graph, Node *s, Operation *op) {
     Queue Q;
     enqueue(Q, s);
 
-    while(Q.first != NULL) {
+    while (Q.first != NULL) {
 
-        if(op != NULL) op->count(2);
+        if (op != NULL) op->count();
 
         Node *u = dequeue(Q);
-        for(int i = 0; i < u->adjSize; i++) {
+        for (int i = 0; i < u->adjSize; i++) {
 
-            if(op != NULL) op->count();
+            if (op != NULL) op->count();
 
-            if(u->adj[i]->color == COLOR_WHITE) {
+            if (u->adj[i]->color == COLOR_WHITE) {
 
-                if(op != NULL) op->count(3);
+                if (op != NULL) op->count(3);
 
                 u->adj[i]->color = COLOR_GRAY;
                 u->adj[i]->dist = u->dist + 1;
@@ -189,19 +187,19 @@ void bfs(Graph *graph, Node *s, Operation *op) {
                 enqueue(Q, u->adj[i]);
             }
         }
-        if(op != NULL) op->count();
+        if (op != NULL) op->count();
         u->color = COLOR_BLACK;
     }
 
 }
 
 void pretty_print_tree(int n, int parent, int *p, Point *repr, int level = 0) {
-    for(int i = 0; i < level; i++) {
+    for (int i = 0; i < level; i++) {
         printf("        ");
     }
     printf("(%d, %d)\n", repr[parent].row, repr[parent].col);
-    for(int i = 0; i < n; i++) {
-        if(p[i] == parent)
+    for (int i = 0; i < n; i++) {
+        if (p[i] == parent)
             pretty_print_tree(n, i, p, repr, level + 1);
     }
 }
@@ -263,8 +261,8 @@ void print_bfs_tree(Graph *graph) {
         // the parrent array is p (p[k] is the parent for node k or -1 if k is the root)
         // when printing the node k, print repr[k] (it contains the row and column for that point)
         // you can adapt the code for transforming and printing multi-way trees from the previous labs
-        for(int i = 0; i < n; i++)
-            if(p[i] == -1){
+        for (int i = 0; i < n; i++)
+            if (p[i] == -1) {
                 pretty_print_tree(n, i, p, repr);
                 break;
             }
@@ -288,18 +286,121 @@ int shortest_path(Graph *graph, Node *start, Node *end, Node *path[]) {
     // note: the size of the array path is guaranteed to be at least 1000
 
     bfs(graph, start, NULL);
-    if(end->color == COLOR_WHITE)
+    if (end->color == COLOR_WHITE)
         return -1;
 
     int n = end->dist;
     Node *p = end;
-    for(int i = n - 1; i >= 0; i--) {
+    for (int i = n - 1; i >= 0; i--) {
         path[i] = p;
         p = p->parent;
     }
     return n;
 }
 
+struct NodeSet {
+    int rank;
+    NodeSet *parent;
+};
+
+NodeSet *makeSet() {
+    NodeSet *x = new NodeSet;
+    x->parent = x;
+    x->rank = 0;
+
+    return x;
+}
+
+NodeSet *findSet(NodeSet *x) {
+    if (x != x->parent) {
+        x->parent = findSet(x->parent);
+    }
+    return x->parent;
+}
+
+void unify(NodeSet *x, NodeSet *y) {
+    if (x->rank > y->rank) {
+        y->parent = x;
+    } else {
+        x->parent = y;
+    }
+
+    if (x->rank == y->rank) {
+        (y->rank)++;
+    }
+}
+
+void reunion(NodeSet *x, NodeSet *y) {
+    unify(findSet(x), findSet(y));
+}
+
+void generate(Graph &graph, int nrEdges) {
+    int **adMatrix = new int *[graph.nrNodes];
+    for (int i = 0; i < graph.nrNodes; i++) {
+        adMatrix[i] = new int[graph.nrNodes]{0};
+    }
+
+    int nComponents = graph.nrNodes;
+
+    NodeSet **a = new NodeSet *[graph.nrNodes]{NULL};
+
+    for (int i = 0; i < graph.nrNodes; i++) {
+        a[i] = makeSet();
+    }
+
+
+    nrEdges = nrEdges < graph.nrNodes * (graph.nrNodes - 1) / 2 ? nrEdges : graph.nrNodes * (graph.nrNodes - 1) / 2;
+
+    int cntEdges = 0;
+    while (cntEdges < nrEdges - nComponents + 1) {
+        int u = rand() % graph.nrNodes;
+        int v = rand() % graph.nrNodes;
+
+        if (u != v and adMatrix[u][v] == 0 and adMatrix[v][u] == 0) {
+            adMatrix[u][v] = 1;
+            adMatrix[v][u] = 1;
+            graph.v[u]->adjSize++;
+            graph.v[v]->adjSize++;
+            cntEdges++;
+
+            if (findSet(a[u]) != findSet(a[v])) {
+                reunion(a[u], a[v]);
+                nComponents--;
+            }
+        }
+    }
+
+    for (int i = 1; i < graph.nrNodes && nComponents > 1; i++) {
+        if (findSet(a[0]) != findSet(a[i])) {
+            adMatrix[0][i] = 1;
+            adMatrix[i][0] = 1;
+            graph.v[0]->adjSize++;
+            graph.v[i]->adjSize++;
+
+            reunion(a[0], a[i]);
+            nComponents--;
+        }
+    }
+
+    for (int i = 0; i < graph.nrNodes; i++) {
+        if(graph.v[i]->adjSize > 0) {
+            graph.v[i]->adj = new Node*[graph.v[i]->adjSize]{NULL};
+            graph.v[i]->adjSize = 0;
+
+            for(int j = 0; j < graph.nrNodes; j++) {
+                if(adMatrix[i][j] == 1) {
+                    graph.v[i]->adj[graph.v[i]->adjSize] = graph.v[j];
+                    graph.v[i]->adjSize++;
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < graph.nrNodes; i++) {
+        delete adMatrix[i];
+    }
+    delete[] adMatrix;
+}
 
 void performance() {
     int n, i;
@@ -318,6 +419,7 @@ void performance() {
         }
         // TODO: generate n random edges
         // make sure the generated graph is connected
+        generate(graph, n);
 
         bfs(&graph, graph.v[0], &op);
         free_graph(&graph);
@@ -336,6 +438,7 @@ void performance() {
         }
         // TODO: generate 4500 random edges
         // make sure the generated graph is connected
+        generate(graph, 4500);
 
         bfs(&graph, graph.v[0], &op);
         free_graph(&graph);
