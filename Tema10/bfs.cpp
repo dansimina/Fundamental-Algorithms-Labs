@@ -1,3 +1,25 @@
+/*
+ * Simina Dan-Marius
+ * Grupa 2
+ *
+ * Pentru determinarea vecinilor unei celule ma uit pe pozitiile de jos, stanga, sus, dreapta si verific daca sunt libere si daca
+ * se afla inauntrul matricii, iar daca da le adaug in lista.
+ * Complexitate O(1).
+ *
+ * Pentru BFS mai intai initializez fiecare nod cu culoarea alb, distanta infinit si parintele NULL, iar apoi introduc nodul din care
+ * pornesc in coada. Apoi iau pe rand fiecare nod din coada si pentru toti vecinii cu culoarea alba ii introduc in coada, le pun culoarea grii
+ * distanta este egala cu distanta nodului curent plus 1, iar parintele e nodul curent. Dupa ce termin cu toti vecinii nodului curent
+ * ii schimb culoarea in negru.
+ * Complexitate O(V + E).
+ *
+ * Pentru afisarea arborelui BFS afisez nodul curent si apelez recursiv functia pentru toti copii lui.
+ * Complexitate O(n^2).
+ *
+ * Pentru determinarea celui mai scurt drum aplic BFS, iar apoi reconstruiesc drumul mergand pe parinte de la nodul destinatie pana la
+ * nodul din care am pornit.
+ * Complexitate O(V + E).
+ *
+ */
 #include <stdlib.h>
 #include <string.h>
 #include "bfs.h"
