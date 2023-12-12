@@ -38,9 +38,9 @@ typedef struct {
     Node **v;
 } Graph;
 
-int get_neighbors(const Grid *grid, Point p, Point neighb[]);
+int get_neighbors(const Grid *grid, Point p, Point neighb[], bool knight = false);
 
-void grid_to_graph(const Grid *grid, Graph *graph);
+void grid_to_graph(const Grid *grid, Graph *graph, bool knight = false);
 
 void free_graph(Graph *graph);
 

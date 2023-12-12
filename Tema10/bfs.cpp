@@ -20,24 +20,42 @@
  * Complexitate O(V + E).
  *
  */
+#include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include "bfs.h"
 
-int get_neighbors(const Grid *grid, Point p, Point neighb[]) {
+using namespace std;
+
+int get_neighbors(const Grid *grid, Point p, Point neighb[], bool knight) {
     // TODO: fill the array neighb with the neighbors of the point p and return the number of neighbors
     // the point p will have at most 4 neighbors (up, down, left, right)
     // avoid the neighbors that are outside the grid limits or fall into a wall
     // note: the size of the array neighb is guaranteed to be at least 4
 
-    //horse problem
-//    int dRow[] = {1, -1, -2, -2, -1, 1, 2, 2};
-//    int dCol[] = {-2, -2, -1, 1, 2, 2, 1, -1};
+    //knight problem
+    const int dRowKnight[] = {1, -1, -2, -2, -1, 1, 2, 2};
+    const int dColKnight[] = {-2, -2, -1, 1, 2, 2, 1, -1};
+    const int nKnight = sizeof(dRowKnight) / sizeof(dRowKnight[0]);
     //normal
-    int dRow[] = {-1, 0, 1, 0};
-    int dCol[] = {0, -1, 0, 1};
+    const int dRowNormal[] = {-1, 0, 1, 0};
+    const int dColNormal[] = {0, -1, 0, 1};
+    const int nNormal = sizeof(dRowNormal) / sizeof(dRowNormal[0]);
 
-    int n = sizeof(dRow) / sizeof(dRow[0]);
+    int dRow[8] = {0};
+    int dCol[8] = {0};
+    int n = 0;
+
+    if(knight == true) {
+        n = nKnight;
+        copy(dRowKnight, dRowKnight + n, dRow);
+        copy(dColKnight, dColKnight + n, dCol);
+    } else {
+        n = nNormal;
+        copy(dRowNormal, dRowNormal + n, dRow);
+        copy(dColNormal, dColNormal + n, dCol);
+    }
+
     int cntNeighb = 0;
 
     for (int i = 0; i < n; i++) {
@@ -50,7 +68,7 @@ int get_neighbors(const Grid *grid, Point p, Point neighb[]) {
     return cntNeighb;
 }
 
-void grid_to_graph(const Grid *grid, Graph *graph) {
+void grid_to_graph(const Grid *grid, Graph *graph, bool knight) {
     //we need to keep the nodes in a matrix, so we can easily refer to a position in the grid
     Node *nodes[MAX_ROWS][MAX_COLS];
     int i, j, k;
@@ -83,7 +101,7 @@ void grid_to_graph(const Grid *grid, Graph *graph) {
 
     //compute the adjacency list for each node
     for (i = 0; i < graph->nrNodes; ++i) {
-        graph->v[i]->adjSize = get_neighbors(grid, graph->v[i]->position, neighb);
+        graph->v[i]->adjSize = get_neighbors(grid, graph->v[i]->position, neighb, knight);
         if (graph->v[i]->adjSize != 0) {
             graph->v[i]->adj = (Node **) malloc(graph->v[i]->adjSize * sizeof(Node *));
             k = 0;

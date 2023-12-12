@@ -24,8 +24,7 @@ enum {
     COMMAND_BFS_STEP,
     COMMAND_BFS_TREE,
     COMMAND_PATH,
-    COMMAND_PERF,
-    COMMAND_KNIGHT
+    COMMAND_PERF
 };
 
 typedef struct {
@@ -193,7 +192,7 @@ void readCommand(COMMAND *c, const Grid *grid) {
             validCommand = 1;
         } else if (strcmp(token, "neighb") == 0 || strcmp(token, "neighbors") == 0 ||
                    strcmp(token, "bfs") == 0 || strcmp(token, "bfs_step") == 0 || strcmp(token, "bfs_tree") == 0 ||
-                   strcmp(token, "path") == 0 || strcmp(token, "knight") == 0) {
+                   strcmp(token, "path") == 0) {
             if (strcmp(token, "neighb") == 0 || strcmp(token, "neighbors") == 0) {
                 c->command = COMMAND_NEIGHB;
             } else if (strcmp(token, "bfs") == 0) {
@@ -204,8 +203,6 @@ void readCommand(COMMAND *c, const Grid *grid) {
                 c->command = COMMAND_BFS_TREE;
             } else if (strcmp(token, "path") == 0) {
                 c->command = COMMAND_PATH;
-            } else if (strcmp(token, "knight") == 0) {
-                c->command = COMMAND_KNIGHT;
             }
             c->p1.row = -1;
             c->p1.col = -1;
@@ -235,10 +232,6 @@ void readCommand(COMMAND *c, const Grid *grid) {
                 } else {
                     validCommand = 1;
                 }
-            }
-
-            if (c->command == COMMAND_KNIGHT && c->p1.row < MAX_ROWS && c->p1.col < MAX_COLS) {
-                validCommand = 1;
             }
         }
         if (validCommand == 0) {
@@ -414,52 +407,6 @@ int main() {
                         }
                     }
                 }
-            }
-        } else if (cmd.command == COMMAND_KNIGHT) {
-            Grid grid_knight = {0};
-            grid_knight.rows = cmd.p1.row;
-            grid_knight.cols = cmd.p1.col;
-
-            grid2 = grid_knight;
-            grid_to_graph(&grid_knight, &graph, true);
-
-            int i;
-            Node *s = graph.v[0];
-
-            if (s == NULL) {
-                snprintf(err, 100, "Invalid starting position (%d, %d).", cmd.p1.row, cmd.p1.col);
-                errors.push_back(err);
-            } else {
-                bfs(&graph, s);
-                grid2.mat[s->position.row][s->position.col] |= MASK_START;
-
-//                for (i = 0; i < graph.nrNodes; ++i) {
-//                    if (graph.v[i]->color == COLOR_BLACK) {
-//                        Point p1;
-//                        p1 = graph.v[i]->position;
-//                        grid2.mat[p1.row][p1.col] |= MASK_FILL;
-//                    }
-//                }
-
-                int newLayer = 1;
-                    int crtDist = 0;
-                    displayGrid(&grid2, cmd.command);
-                    while (newLayer) {
-                        newLayer = 0;
-                        ++crtDist;
-                        for (i = 0; i < graph.nrNodes; ++i) {
-                            if (graph.v[i]->color == COLOR_BLACK && graph.v[i]->dist == crtDist) {
-                                newLayer = 1;
-                                Point p1;
-                                p1 = graph.v[i]->position;
-                                grid2.mat[p1.row][p1.col] |= MASK_FILL;
-                            }
-                        }
-                        if (newLayer) {
-                            sleep(1);
-                            displayGrid(&grid2, cmd.command);
-                        }
-                    }
             }
         } else if (cmd.command == COMMAND_PERF) {
             performance();
