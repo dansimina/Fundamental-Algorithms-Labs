@@ -40,10 +40,10 @@ struct NodeSet {
     NodeSet *parent;
 };
 
-NodeSet* makeSet(int key, int n){
+NodeSet *makeSet(int key, int n) {
     Operation opTotale = profiler.createOperation("Operatii", n);
 
-    NodeSet* x = new NodeSet;
+    NodeSet *x = new NodeSet;
     opTotale.count(3);
     x->key = key;
     x->parent = x;
@@ -52,11 +52,11 @@ NodeSet* makeSet(int key, int n){
     return x;
 }
 
-NodeSet* findSet(NodeSet *x, int n) {
+NodeSet *findSet(NodeSet *x, int n) {
     Operation opTotale = profiler.createOperation("Operatii", n);
 
     opTotale.count();
-    if(x != x->parent) {
+    if (x != x->parent) {
         opTotale.count();
         x->parent = findSet(x->parent, n);
     }
@@ -67,17 +67,16 @@ void unify(NodeSet *x, NodeSet *y, int n) {
     Operation opTotale = profiler.createOperation("Operatii", n);
 
     opTotale.count();
-    if(x->rank > y->rank) {
+    if (x->rank > y->rank) {
         opTotale.count();
         y->parent = x;
-    }
-    else {
+    } else {
         opTotale.count();
         x->parent = y;
     }
 
     opTotale.count();
-    if(x->rank == y->rank) {
+    if (x->rank == y->rank) {
         opTotale.count();
         (y->rank)++;
     }
@@ -115,10 +114,9 @@ Node *create(int key) {
 
 void insertFirst(Node *&first, int key) {
     Node *node = create(key);
-    if(first == NULL) {
+    if (first == NULL) {
         first = node;
-    }
-    else {
+    } else {
         node->next = first;
         first = node;
     }
@@ -132,30 +130,30 @@ void displayList(Node *first) {
 }
 
 Graph generate(int n) {
-    int **adMatrix = new int*[n];
+    int **adMatrix = new int *[n];
     for (int i = 0; i < n; i++) {
         adMatrix[i] = new int[n]{0};
     }
     int nComponents = n;
 
     NodeSet *a[maxSize] = {NULL};
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         a[i] = makeSet(i, n);
     }
 
     Graph G = {NULL};
     G.nVertices = n;
     G.nEdges = 4 * n < n * (n - 1) / 2 ? 4 * n : n * (n - 1) / 2;
-    G.lists = new Node*[n]{NULL};
+    G.lists = new Node *[n]{NULL};
     G.edges = new Edge[G.nEdges]{NULL};
 
     int cntEdges = 0;
-    while(cntEdges < G.nEdges - nComponents + 1) {
+    while (cntEdges < G.nEdges - nComponents + 1) {
         int u = rand() % n;
         int v = rand() % n;
         int w = rand() % maxValue;
 
-        if(u != v and adMatrix[u][v] == 0 and adMatrix[v][u] == 0) {
+        if (u != v and adMatrix[u][v] == 0 and adMatrix[v][u] == 0) {
             adMatrix[u][v] = 1;
             adMatrix[v][u] = 1;
             insertFirst(G.lists[u], v);
@@ -163,22 +161,22 @@ Graph generate(int n) {
             G.edges[cntEdges] = Edge{u, v, w};
             cntEdges++;
 
-            if(findSet(a[u], n) != findSet(a[v], n)) {
+            if (findSet(a[u], n) != findSet(a[v], n)) {
                 reunion(a[u], a[v], n);
                 nComponents--;
             }
         }
     }
 
-    for(int i = 1; i < n && nComponents > 1; i++) {
-        if(findSet(a[0], n) != findSet(a[i], n)) {
+    for (int i = 1; i < n && nComponents > 1; i++) {
+        if (findSet(a[0], n) != findSet(a[i], n)) {
             int w = rand() % maxValue;
-            adMatrix[a[0]->key][a[i]->key] = 1;
-            adMatrix[a[i]->key][a[0]->key] = 1;
-            insertFirst(G.lists[a[0]->key], a[i]->key);
-            insertFirst(G.lists[a[i]->key], a[0]->key);
-            G.edges[cntEdges] = Edge{a[0]->key, a[i]->key, w};
-
+            adMatrix[0][i] = 1;
+            adMatrix[0][i] = 1;
+            insertFirst(G.lists[0], i);
+            insertFirst(G.lists[i], 0);
+            G.edges[cntEdges] = Edge{0, i, w};
+            nComponents--;
             reunion(a[0], a[i], n);
         }
     }
@@ -186,7 +184,7 @@ Graph generate(int n) {
     for (int i = 0; i < n; i++) {
         delete adMatrix[i];
     }
-    delete adMatrix;
+    delete[] adMatrix;
 
     return G;
 }
@@ -196,13 +194,13 @@ void displayGraph(Graph G) {
     cout << "\nNumar muchii: " << G.nEdges;
 
     cout << "\n\n Liste de adiacenta:";
-    for(int i = 0; i < G.nVertices; i++) {
+    for (int i = 0; i < G.nVertices; i++) {
         cout << "\n" << i << ": ";
         displayList(G.lists[i]);
     }
 
     cout << "\n\n Costuri muchii: \n";
-    for(int i = 0; i < G.nEdges; i++) {
+    for (int i = 0; i < G.nEdges; i++) {
         cout << G.edges[i].u << " " << G.edges[i].v << " " << G.edges[i].w << "\n";
     }
 
@@ -240,19 +238,19 @@ Graph kruskal(Graph G, int n) {
     A.nVertices = G.nVertices;
     A.nEdges = G.nVertices - 1;
 
-    A.lists = new Node*[A.nVertices]{NULL};
+    A.lists = new Node *[A.nVertices]{NULL};
     A.edges = new Edge[A.nEdges]{NULL};
 
     NodeSet *a[maxSize] = {NULL};
-    for(int i = 0; i < G.nVertices; i++) {
+    for (int i = 0; i < G.nVertices; i++) {
         a[i] = makeSet(i, n);
     }
 
     quickSort(G.edges, 0, G.nEdges - 1);
 
     A.nEdges = 0;
-    for(int i = 0; i < G.nEdges; i++) {
-        if(findSet(a[G.edges[i].u], n) != findSet(a[G.edges[i].v], n)) {
+    for (int i = 0; i < G.nEdges; i++) {
+        if (findSet(a[G.edges[i].u], n) != findSet(a[G.edges[i].v], n)) {
             A.edges[A.nEdges++] = G.edges[i];
             insertFirst(A.lists[G.edges[i].u], G.edges[i].v);
             insertFirst(A.lists[G.edges[i].v], G.edges[i].u);
@@ -267,11 +265,11 @@ Graph kruskal(Graph G, int n) {
 void demo() {
     const int n = 10;
     NodeSet *a[n] = {NULL};
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         a[i] = makeSet(i, n);
     }
 
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         cout << findSet(a[i], n)->key << " ";
     }
     cout << "\n";
@@ -282,7 +280,7 @@ void demo() {
     reunion(a[4], a[8], n);
     reunion(a[1], a[5], n);
 
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         cout << findSet(a[i], n)->key << " ";
     }
 
@@ -295,8 +293,8 @@ void demo() {
 }
 
 void perf() {
-    for(int n = stepSize; n <= maxSize; n += stepSize) {
-        for(int test = 1; test <= nrTests; test++) {
+    for (int n = stepSize; n <= maxSize; n += stepSize) {
+        for (int test = 1; test <= nrTests; test++) {
             Graph G = generate(n);
             Graph A = kruskal(G, n);
         }
@@ -308,7 +306,7 @@ void perf() {
 }
 
 int main() {
-    demo();
-//    perf();
+//    demo();
+    perf();
     return 0;
 }
