@@ -19,6 +19,10 @@
  * nodul din care am pornit.
  * Complexitate O(V + E).
  *
+ * Pentru problema cu calul iau vecinii punctului curent in L si aplic pe o tabla goala BFS.
+ *
+ * Din grafice se observa cum variaza numarul de operatii daca fixam numarul de noduri si cum variaza numarul de operatii daca fixam numarul de
+ * muchii.
  */
 #include <iostream>
 #include <stdlib.h>
@@ -46,7 +50,7 @@ int get_neighbors(const Grid *grid, Point p, Point neighb[], bool knight) {
     int dCol[8] = {0};
     int n = 0;
 
-    if(knight == true) {
+    if (knight == true) {
         n = nKnight;
         copy(dRowKnight, dRowKnight + n, dRow);
         copy(dColKnight, dColKnight + n, dCol);

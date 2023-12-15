@@ -433,33 +433,25 @@ int main() {
                 bfs(&graph, s);
                 grid2.mat[s->position.row][s->position.col] |= MASK_START;
 
-//                for (i = 0; i < graph.nrNodes; ++i) {
-//                    if (graph.v[i]->color == COLOR_BLACK) {
-//                        Point p1;
-//                        p1 = graph.v[i]->position;
-//                        grid2.mat[p1.row][p1.col] |= MASK_FILL;
-//                    }
-//                }
-
                 int newLayer = 1;
-                    int crtDist = 0;
-                    displayGrid(&grid2, cmd.command);
-                    while (newLayer) {
-                        newLayer = 0;
-                        ++crtDist;
-                        for (i = 0; i < graph.nrNodes; ++i) {
-                            if (graph.v[i]->color == COLOR_BLACK && graph.v[i]->dist == crtDist) {
-                                newLayer = 1;
-                                Point p1;
-                                p1 = graph.v[i]->position;
-                                grid2.mat[p1.row][p1.col] |= MASK_FILL;
-                            }
-                        }
-                        if (newLayer) {
-                            sleep(1);
-                            displayGrid(&grid2, cmd.command);
+                int crtDist = 0;
+                displayGrid(&grid2, cmd.command);
+                while (newLayer) {
+                    newLayer = 0;
+                    ++crtDist;
+                    for (i = 0; i < graph.nrNodes; ++i) {
+                        if (graph.v[i]->color == COLOR_BLACK && graph.v[i]->dist == crtDist) {
+                            newLayer = 1;
+                            Point p1;
+                            p1 = graph.v[i]->position;
+                            grid2.mat[p1.row][p1.col] |= MASK_FILL;
                         }
                     }
+                    if (newLayer) {
+                        sleep(1);
+                        displayGrid(&grid2, cmd.command);
+                    }
+                }
             }
         } else if (cmd.command == COMMAND_PERF) {
             performance();
