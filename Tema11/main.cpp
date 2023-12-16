@@ -238,8 +238,52 @@ void demo() {
     displayLinkedList(L);
 }
 
+Graph generate(int nVertices, int nEdges) {
+    int **adMatrix = new int *[nVertices];
+    for (int i = 0; i < nVertices; i++) {
+        adMatrix[i] = new int[nVertices]{0};
+    }
+
+    Graph G = {0};
+    G.nVertices = nVertices;
+    G.verices = new Node *[G.nVertices];
+    for (int i = 0; i < G.nVertices; ++i) {
+        G.verices[i] = create(i);
+    }
+
+    int cntEdges = 0;
+    while (cntEdges < nEdges) {
+        int u = rand() % G.nVertices;
+        int v = rand() % G.nVertices;
+
+        if (u != v and adMatrix[u][v]) {
+            adMatrix[u][v] = 1;
+            G.verices[u]->adjSize++;
+            cntEdges++;
+        }
+    }
+
+    for (int i = 0; i < nVertices; ++i) {
+        G.verices[i]->adj = new Node*[G.verices[i]->adjSize]{NULL};
+        G.verices[i]->adjSize = 0;
+
+        for (int j = 0; j < nVertices; ++j) {
+            if(adMatrix[i][j] == 0) {
+                G.verices[i]->adj[G.verices[i]->adjSize++] = G.verices[j];
+            }
+        }
+    }
+
+    for (int i = 0; i < nVertices; i++) {
+        delete adMatrix[i];
+    }
+    delete[] adMatrix;
+
+    return G;
+}
+
 void perf() {
-    
+
 }
 
 int main() {
