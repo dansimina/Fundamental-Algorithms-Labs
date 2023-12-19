@@ -1,3 +1,33 @@
+/*
+ * Simina Dan-Marius
+ * Grupa 2
+ *
+ * Pentru acest laborator am implementat dfs, sortare topologica si tarjan.
+ *
+ * Pentru dfs mai intai initializez toate nodurile din graf cu culoare alba, parintele NULL si timpii de finalizare, iar timpul global il
+ * pun pe 0 apoi aplic dfs visit pentru toate nodurile albe din graf. In dfs visit mai intai procesez nodul curent si ii setez timpul de
+ * descoperire, culoarea o pun pe gri, iar apoi apelez recursiv dfs visit pentru toti vecinii lui. La final cand termin cu nodul curent
+ * ii setez timpul de finalizare si ii pun culoarea pe negru. Totodata in dfs verific daca am muchie de la nod gri la nod gri adica daca
+ * am graful e aciclic si returnez true daca nu are ciclu si false daca are.
+ * Complexitate O(V + E).
+ *
+ * Pentru sortare topologica apelez dfs iar in partea de vizitari cand setez timpul de finalizare pentru nod il adaug si la inceputul unei
+ * liste simplu inlantuite, iar daca dupa terminarea dfs-ului obtin ca graful e aciclic returnez lista, iar daca graful are cicluri
+ * returnez o lista goala pentru ca daca graful are cicluri nu are sortare topologica.
+ * Complexitate O(V + E).
+ *
+ * Pentru tarjan folosesc un dfs modificat. Doar ca aici in loc de timpi folosesc index care reprezinta cate noduri au fost vizitate
+ * inainte de nodul curent, lowLink care reprezinta indexul radacinii componentei tare conexe si o stiva in care tin nodurile vizitate.
+ * Totodata initializez indexul fiecarui nod cu -1 si nu mai folosesc culori pentru ca indexul = -1 indica ca nodul e nevizitat.
+ * Pe langa partea de vizitare a nodurilor si actualizarea campurilor nodului curent, la revenirea din apelurile recursive mai verific
+ * daca nodul curent e radacina unei noi componente tare conexe, adica daca lowLink e egal cu index, iar daca da inseamna ca avem o
+ * noua componenta conexa(cresc nr de componente) si scot din stiva toate nodurile vizitate pana la nodul curent si la marchez ca fac parte
+ * din aceeasi componenta tare conexa.
+ * Complexitate O(V + E).
+ *
+ * La performance putem observa din grafic cum variaza numarul de operatii mai intai cand numarul de noduri e constant si variem muchiile,
+ * iar mai apoi cand numarul de muchii e constant si variem nodurile.
+ */
 #include <iostream>
 #include <fstream>
 #include "Profiler.h"
@@ -112,7 +142,7 @@ bool dfsVisit(Graph G, Node *u, int &time, bool topoSort = false, NodeLinkedList
             bool result = dfsVisit(G, u->adj[i], time, topoSort, first, op);
             acyclic = acyclic == false ? false : result;
 
-        } else if (u->adj[i]->discovered > 0 and u->adj[i]->finished == 0) {
+        } else if (u->adj[i]->color == GRAY) {
             acyclic = false;
         }
     }
@@ -369,7 +399,7 @@ void demo() {
     cout << "\nPrimul graf:\n";
     displayGraph(G1);
 
-    cout << dfs(G1) << "\n";
+    cout << "Graful e aciclic: " << dfs(G1) << "\n";
     prettyPrintDfsTree(G1);
 
     LinkedList L = topologicalSort(G1);
