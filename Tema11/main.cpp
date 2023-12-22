@@ -142,7 +142,7 @@ bool dfsVisit(Graph G, Node *u, int &time, bool topoSort = false, NodeLinkedList
             bool result = dfsVisit(G, u->adj[i], time, topoSort, first, op);
             acyclic = acyclic == false ? false : result;
 
-        } else if (u->adj[i]->color == GRAY) {
+        } else if (u->adj[i]->color == GRAY and u != u->adj[i]) {
             acyclic = false;
         }
     }
@@ -403,6 +403,7 @@ void demo() {
     prettyPrintDfsTree(G1);
 
     LinkedList L = topologicalSort(G1);
+    cout << "\nSortarea topoligica:\n";
     displayLinkedList(L);
     deleteLinkedList(L);
 
