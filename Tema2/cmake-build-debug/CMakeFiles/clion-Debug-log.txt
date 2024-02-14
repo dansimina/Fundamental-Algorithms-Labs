@@ -1,4 +1,0 @@
-"D:\Program Files\CLion 2023.2.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=D:/Program Files/CLion 2023.2.2/bin/ninja/win/x64/ninja.exe" -G Ninja -S D:\Documents\Facultate\AF\Laborator\Tema2 -B D:\Documents\Facultate\AF\Laborator\Tema2\cmake-build-debug
--- Configuring done (0.7s)
--- Generating done (0.1s)
--- Build files have been written to: D:/Documents/Facultate/AF/Laborator/Tema2/cmake-build-debug
