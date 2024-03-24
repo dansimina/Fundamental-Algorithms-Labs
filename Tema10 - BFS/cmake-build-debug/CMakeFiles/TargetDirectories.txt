@@ -1,3 +1,0 @@
-D:/Documents/Facultate/AF/FA_labs/Tema10 - BFS/cmake-build-debug/CMakeFiles/Tema10.dir
-D:/Documents/Facultate/AF/FA_labs/Tema10 - BFS/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Documents/Facultate/AF/FA_labs/Tema10 - BFS/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,3 +1,0 @@
-D:/Documents/Facultate/AF/Laborator/Tema5/cmake-build-debug/CMakeFiles/Tema5.dir
-D:/Documents/Facultate/AF/Laborator/Tema5/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/Documents/Facultate/AF/Laborator/Tema5/cmake-build-debug/CMakeFiles/rebuild_cache.dir
