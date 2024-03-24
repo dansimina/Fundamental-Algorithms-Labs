@@ -1,0 +1,3 @@
+D:/Documents/Facultate/AF/FA_labs/Tema1 - Metode directe de sortare/cmake-build-release/CMakeFiles/Tema1.dir
+D:/Documents/Facultate/AF/FA_labs/Tema1 - Metode directe de sortare/cmake-build-release/CMakeFiles/edit_cache.dir
+D:/Documents/Facultate/AF/FA_labs/Tema1 - Metode directe de sortare/cmake-build-release/CMakeFiles/rebuild_cache.dir
