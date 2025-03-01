@@ -9,7 +9,7 @@ This repository contains implementations and performance analysis of various fun
 - **Heapsort vs. Quicksort** – Performance comparison between Heapsort and Quicksort on various datasets.  
 - **Merging k Sorted Sequences** – Algorithm for efficiently merging k sorted sequences.  
 - **Hash Tables** – Implementation and analysis of data structures based on hashing.  
-- **Multi-Way Trees (B-Trees, Tries)** – Implementation and analysis of multi-way trees for efficient storage and searching.  
+- **Multi-Way Trees** – Implementation and analysis of multi-way trees for efficient storage and searching.  
 - **Dynamic Order Statistics** – Algorithms for maintaining order statistics in dynamic structures.  
 - **Iterative vs. Recursive Binary Tree Traversal** – Comparison of efficiency between iterative and recursive tree traversal methods.  
 - **Disjoint Sets (Union-Find)** – Implementation and optimizations of the disjoint-set data structure.  
